@@ -40,7 +40,7 @@ class UsersController < ApplicationController
   # POST /users
   # POST /users.xml
   def create
-    @user = User.new(params[:user])
+    @user = User.new(user_params)
 
     respond_to do |format|
       if @user.save
@@ -59,7 +59,7 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
 
     respond_to do |format|
-      if @user.update_attributes(params[:user])
+      if @user.update_attributes(user_params)
         format.html { redirect_to(@user, :notice => 'User was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -90,8 +90,25 @@ class UsersController < ApplicationController
   def update_all
     params['user'].keys.each do |id|
       @user = User.find(id.to_i)
-      @user.update_attributes(params['user'][id])
+      @user.update_attributes(user_params(id))
     end
     redirect_to(users_url)
   end
+
+  private
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def user_params(id = nil)
+    if id
+      params[:user][id].permit(
+          :first_name,
+          :last_name,
+          :email)
+    else
+      params[:user].permit(
+          :first_name,
+          :last_name,
+          :email)
+    end
+  end
+
 end
