@@ -41,11 +41,11 @@ RSpec.describe UsersController, type: :controller do
                        }
       end
 
-      it "does not change users attributes" do
+      it "does not change users attributes which are invalid" do
         user1.reload
         user2.reload
         user3.reload
-        expect(user1.first_name).to eq('John')
+        expect(user1.first_name).to eq('Joost')
         expect(user2.email).to eq('john.doe@mips.be')
         expect(user3.first_name).to eq('John')
       end

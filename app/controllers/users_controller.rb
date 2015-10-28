@@ -88,35 +88,27 @@ class UsersController < ApplicationController
 
   # PUT /users/all
   def update_all
-    User.transaction do
-      params['user'].keys.each do |id|
-        @user = User.find(id.to_i)
-        status = @user.update_attributes(user_params(id))
-      end
+    update_status = true
+    params['user'].keys.each do |id|
+      @user = User.find(id.to_i)
+      update_status = update_status && @user.update_attributes(user_params(id))
     end
-    if status
+    if update_status
       redirect_to(users_url)
     else
       respond_to do |format|
-        format.html { render :action => "edit_all" }
+        format.html { render :action => :edit_all }
       end
     end
-
   end
 
   private
   # Never trust parameters from the scary internet, only allow the white list through.
   def user_params(id = nil)
     if id
-      params[:user][id].permit(
-          :first_name,
-          :last_name,
-          :email)
+      params.require(:user).fetch(id).permit( :first_name, :last_name, :email )
     else
-      params[:user].permit(
-          :first_name,
-          :last_name,
-          :email)
+      params.require(:user).permit( :first_name, :last_name, :email )
     end
   end
 
