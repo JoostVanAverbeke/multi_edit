@@ -7,6 +7,9 @@ gem 'rails', '4.2.3'
 
 gem 'sqlite3'
 
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+gem 'tzinfo-data', '~> 1.2015.5'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
@@ -29,3 +32,8 @@ gem 'sqlite3'
 # group :development, :test do
 #   gem 'webrat'
 # end
+group :development, :test do
+  gem 'rspec', '~> 3.3.0'
+  gem 'rspec-rails', '~> 3.3.3'
+  gem 'factory_girl_rails', '~> 4.5.0'
+end

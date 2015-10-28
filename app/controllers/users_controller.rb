@@ -88,11 +88,20 @@ class UsersController < ApplicationController
 
   # PUT /users/all
   def update_all
-    params['user'].keys.each do |id|
-      @user = User.find(id.to_i)
-      @user.update_attributes(user_params(id))
+    User.transaction do
+      params['user'].keys.each do |id|
+        @user = User.find(id.to_i)
+        status = @user.update_attributes(user_params(id))
+      end
     end
-    redirect_to(users_url)
+    if status
+      redirect_to(users_url)
+    else
+      respond_to do |format|
+        format.html { render :action => "edit_all" }
+      end
+    end
+
   end
 
   private
