@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
   describe 'PATCH #update_all users' do
+
+    let (:user1) { FactoryGirl.create(:user) }
+    let (:user2) { FactoryGirl.create(:user, first_name: 'Lara') }
+    let (:user3) { FactoryGirl.create(:user) }
+
     describe "valid attributes" do
-      let (:user1) { FactoryGirl.create(:user) }
-      let (:user2) { FactoryGirl.create(:user, first_name: 'Lara') }
-      let (:user3) { FactoryGirl.create(:user) }
       before(:each) do
         # patch :update_all, user: FactoryGirl.attributes_for(:user)
         put :update_all, :user => {
@@ -15,7 +17,7 @@ RSpec.describe UsersController, type: :controller do
                        }
       end
 
-      it "changes the user's attributes if they were updated" do
+      it "changes the users attributes if they were updated" do
         user1.reload
         user2.reload
         user3.reload
@@ -24,24 +26,33 @@ RSpec.describe UsersController, type: :controller do
         expect(user3.first_name).to eq('John')
       end
 
-      # it "redirects to the updated referral of the patient" do
-      #   expect(response).to redirect_to(patient_referral_path(assigns(:patient), assigns(:referral)))
-      # end
+      it "redirects to the index view (list of users)" do
+        expect(response).to redirect_to users_url
+      end
+
     end
 
-    # describe "invalid attributes" do
-    #   before(:each) do
-    #     patch :update_all, blood_bag_id: @blood_bag_attribute.bbat_BloodBag,
-    #           id: @blood_bag_attribute, blood_bag_attribute: FactoryGirl.attributes_for(:blood_bag_attribute)
-    #   end
+    describe "invalid attributes" do
+      before(:each) do
+        put :update_all, :user => {
+                           user1.to_param => FactoryGirl.attributes_for(:user, first_name: 'Joost'),
+                           user2.to_param => FactoryGirl.attributes_for(:user, email: 'Sofia'),
+                           user3.to_param => FactoryGirl.attributes_for(:user)
+                       }
+      end
 
-      # it "does not change @referral's person attributes" do
-      #   expect(assigns[:referral]).to eq @referral
-      # end
-      #
-      # it "re-renders the :edit method" do
-      #   expect(response).to render_template :edit
-      # end
-  #   end
+      it "does not change users attributes" do
+        user1.reload
+        user2.reload
+        user3.reload
+        expect(user1.first_name).to eq('John')
+        expect(user2.email).to eq('john.doe@mips.be')
+        expect(user3.first_name).to eq('John')
+      end
+
+      it "re-renders the :edit_all method" do
+        expect(response).to render_template :edit_all
+      end
+    end
   end
 end
